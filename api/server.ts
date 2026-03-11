@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import { menu_entry, order } from '../model/Model';
+import { order } from '../model/Model';
 import { dailyMenu, findOrderById, addOrder, updateOrderById } from './database';
 
 const app = express();

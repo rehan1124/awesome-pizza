@@ -19,16 +19,40 @@ const notification = document.getElementById('notification');
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
     loadDailyMenu();
     setupEventListeners();
     updateCartDisplay();
 });
+
+// Theme toggle
+function initTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('theme-toggle').textContent = '☀️';
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        document.getElementById('theme-toggle').textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('theme-toggle').textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+    }
+}
 
 // Setup event listeners
 function setupEventListeners() {
     placeOrderBtn.addEventListener('click', handlePlaceOrder);
     lookupOrderBtn.addEventListener('click', handleLookupOrder);
     customerName.addEventListener('input', updateOrderButton);
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
     
     // Allow Enter key to lookup orders
     orderIdInput.addEventListener('keypress', function(e) {
