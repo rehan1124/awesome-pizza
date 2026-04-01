@@ -1,7 +1,26 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import { order } from '../model/Model';
 import { dailyMenu, findOrderById, addOrder, updateOrderById } from './database';
+
+// Token payload: base64({"role":"admin"})
+// To generate: Buffer.from(JSON.stringify({ role: 'admin' })).toString('base64')
+const HARDCODED_TOKEN = 'eyJyb2xlIjoiYWRtaW4ifQ==';
+
+function extractBearerToken(req: Request): string | null {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+    return authHeader.slice(7);
+}
+
+function requireToken(req: Request, res: Response, next: NextFunction): void {
+    const token = extractBearerToken(req);
+    if (!token || token !== HARDCODED_TOKEN) {
+        res.status(401).json({ success: false, error: 'Unauthorized', message: 'Valid token required' });
+        return;
+    }
+    next();
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -248,6 +267,34 @@ app.put('/api/orders/:id', (req, res) => {
             error: 'Internal server error',
             message: 'Failed to update order'
         });
+    }
+});
+
+// GET /api/protected - Requires a valid hardcoded token
+app.get('/api/protected', requireToken, (_req, res) => {
+    res.status(200).json({ success: true, message: 'Access granted to protected route' });
+});
+
+// GET /api/admin - Decodes token and checks for role: admin
+app.get('/api/admin', (req, res) => {
+    const token = extractBearerToken(req);
+    if (!token) {
+        res.status(401).json({ success: false, error: 'Unauthorized', message: 'Token required' });
+        return;
+    }
+
+    let payload: { role?: string };
+    try {
+        payload = JSON.parse(Buffer.from(token, 'base64').toString('utf8'));
+    } catch {
+        res.status(401).json({ success: false, error: 'Unauthorized', message: 'Invalid token format' });
+        return;
+    }
+
+    if (payload.role === 'admin') {
+        res.status(200).json({ success: true, message: 'Welcome, admin!' });
+    } else {
+        res.status(403).json({ success: false, error: 'Forbidden', message: 'Not authorised' });
     }
 });
 

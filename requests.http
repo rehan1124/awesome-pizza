@@ -158,6 +158,41 @@ Content-Type: {{contentType}}
 }
 
 ###############################################
+# PROTECTED / ADMIN ENDPOINTS
+###############################################
+
+@adminToken = eyJyb2xlIjoiYWRtaW4ifQ==
+@userToken = eyJyb2xlIjoidXNlciJ9
+
+### Access Protected Route (valid token)
+# Returns 200 - access granted
+GET {{baseUrl}}/api/protected
+Authorization: Bearer {{adminToken}}
+
+### Access Protected Route (no token)
+# Returns 401 - unauthorized
+GET {{baseUrl}}/api/protected
+
+### Access Protected Route (wrong token)
+# Returns 401 - unauthorized
+GET {{baseUrl}}/api/protected
+Authorization: Bearer invalidtoken
+
+### Access Admin Route (admin role)
+# Decodes token, finds role: admin -> returns 200
+GET {{baseUrl}}/api/admin
+Authorization: Bearer {{adminToken}}
+
+### Access Admin Route (non-admin role)
+# Decodes token, role: user -> returns 403 not authorised
+GET {{baseUrl}}/api/admin
+Authorization: Bearer {{userToken}}
+
+### Access Admin Route (no token)
+# Returns 401 - token required
+GET {{baseUrl}}/api/admin
+
+###############################################
 # SAMPLE WORKFLOW
 ###############################################
 
