@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "lib": [
+            "ES2020"
+        ],
+        "types": [
+            "node"
+        ],
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "ignoreDeprecations": "6.0",
+        "baseUrl": ".",
+        "paths": {
+            "@fixtures/*": [
+                "src/fixtures/*"
+            ],
+            "@pages/*": [
+                "src/pages/*"
+            ],
+            "@data/*": [
+                "test-data/*"
+            ]
+        }
+    },
+    "include": [
+        "./**/*.ts"
+    ]
+}

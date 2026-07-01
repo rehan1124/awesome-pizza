@@ -87,15 +87,16 @@ function renderMenu() {
     dailyMenu.forEach((item, index) => {
         const menuItemDiv = document.createElement('div');
         menuItemDiv.className = 'menu-item';
+        menuItemDiv.setAttribute('data-testid', 'menu-item');
         menuItemDiv.innerHTML = `
             <img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjhmOWZhIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCI+8J+NlSBQaXp6YSBJbWFnZTwvdGV4dD4KPC9zdmc+'">
             <h3>${item.name}</h3>
             <p>${item.description}</p>
             <div class="quantity-controls">
                 <div class="quantity-selector">
-                    <button class="quantity-btn" onclick="updateQuantity('${item.name}', -1)">−</button>
+                    <button class="quantity-btn" aria-label="Decrease quantity" onclick="updateQuantity('${item.name}', -1)">−</button>
                     <span class="quantity-display" id="qty-${index}">${cart[item.name] || 0}</span>
-                    <button class="quantity-btn" onclick="updateQuantity('${item.name}', 1)">+</button>
+                    <button class="quantity-btn" aria-label="Increase quantity" onclick="updateQuantity('${item.name}', 1)">+</button>
                 </div>
             </div>
         `;
@@ -131,12 +132,12 @@ function updateCartDisplay() {
     }
     
     cartItems.innerHTML = cartItemsArray.map(([name, quantity]) => `
-        <div class="cart-item">
+        <div class="cart-item" data-testid="cart-item">
             <div>
                 <div class="cart-item-name">${name}</div>
                 <div class="cart-item-quantity">Quantity: ${quantity}</div>
             </div>
-            <button class="remove-item-btn" onclick="removeFromCart('${name}')">Remove</button>
+            <button class="remove-item-btn" aria-label="Remove from cart" onclick="removeFromCart('${name}')">Remove</button>
         </div>
     `).join('');
     
@@ -262,7 +263,7 @@ function displayOrderDetails(order) {
             <div class="order-info-item">
                 <div class="order-info-label">Status</div>
                 <div class="order-info-value">
-                    <span class="status-badge ${statusClass}">${order.status}</span>
+                    <span class="status-badge ${statusClass}" data-testid="order-status">${order.status}</span>
                 </div>
             </div>
         </div>

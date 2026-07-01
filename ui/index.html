@@ -42,7 +42,7 @@
                         <p class="empty-cart">Your cart is empty</p>
                     </div>
                     <div class="cart-total">
-                        <strong>Total Items: <span id="total-items">0</span></strong>
+                        <strong>Total Items: <span id="total-items" data-testid="cart-count">0</span></strong>
                     </div>
                 </div>
 
@@ -61,14 +61,14 @@
                 </div>
             </div>
             
-            <div id="order-details" class="order-details" style="display: none;">
+            <div id="order-details" class="order-details" data-testid="order-details" style="display: none;">
                 <!-- Order details will be displayed here -->
             </div>
         </section>
     </main>
 
     <!-- Success/Error Messages -->
-    <div id="notification" class="notification"></div>
+    <div id="notification" class="notification" data-testid="notification"></div>
 
     <script src="script.js"></script>
 </body>
