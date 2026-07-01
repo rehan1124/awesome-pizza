@@ -58,8 +58,8 @@ jobs:
         path: playwright/all-blob-reports
         pattern: blob-report-*
         merge-multiple: true
-    - name: Merge into single HTML report
-      run: npx playwright merge-reports --reporter html ./all-blob-reports
+    - name: Merge into single HTML report + GitHub summary
+      run: npx playwright merge-reports --config merge.config.ts ./all-blob-reports
       working-directory: playwright
     - name: Upload HTML report
       uses: actions/upload-artifact@v4
