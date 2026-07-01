@@ -43,7 +43,7 @@ export class HomePage {
 
     // Reset app state so each test starts clean (best-practices: clear storage + reload).
     async resetState() {
-        await this.page.evaluate(() => window.localStorage.clear());
+        await this.page.evaluate(() => globalThis.localStorage.clear());
         await this.page.reload();
     }
 

@@ -2,6 +2,11 @@ import { test } from '@fixtures/pizza';
 import regressionData from '@data/regression/regression-data.json';
 
 test.describe('Order flow', { tag: '@regression' }, () => {
+    test.beforeEach(async ({ homePage }) => {
+        await homePage.open();
+        await homePage.resetState();
+    });
+
     test('TC-07: Order placement is blocked without items', async ({ homePage }) => {
         // Cart is empty; even with a name the order cannot be placed.
         await homePage.fillCustomerName(regressionData.customerName);

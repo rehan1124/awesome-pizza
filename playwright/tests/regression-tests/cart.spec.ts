@@ -2,6 +2,11 @@ import { test } from '@fixtures/pizza';
 import regressionData from '@data/regression/regression-data.json';
 
 test.describe('Cart', { tag: '@regression' }, () => {
+    test.beforeEach(async ({ homePage }) => {
+        await homePage.open();
+        await homePage.resetState();
+    });
+
     test('TC-06: User can adjust or remove cart items', async ({ homePage }) => {
         const pizza = regressionData.pizzaName;
 

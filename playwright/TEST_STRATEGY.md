@@ -1,7 +1,12 @@
 # E2E Test Strategy for Awesome Pizza
 
+> This document covers **what** we test and **when**, from the app's perspective.
+> For **how** the tests are implemented (locators, assertions, fixtures/POM, tags, CI),
+> see [PLAYWRIGHT_BEST_PRACTICES.md](./PLAYWRIGHT_BEST_PRACTICES.md).
+
 ## 1. Objective
-Validate the core business flows of the pizza ordering website at http://localhost:3000/ from the user’s perspective using end-to-end browser tests.
+Validate the core business flows of the pizza ordering website at http://localhost:3000/
+from the user’s perspective using end-to-end browser tests.
 
 ## 2. Scope
 Cover the main user journeys:
@@ -14,14 +19,10 @@ Cover the main user journeys:
 - Handling validation and error scenarios
 
 ## 3. Test approach
-- Execute tests in a real browser using Playwright.
-- Validate visible UI behavior and business outcomes.
-- Keep tests isolated by resetting app state before each run.
-- Prefer user-facing locators such as role, label, text, and test IDs.
-- Always use soft assertions (expect.soft) for verifications to capture multiple UI issues in one run.
-- Use Playwright hooks for shared setup and teardown across similar tests.
-- Separate test data from test logic using dedicated folders for smoke and regression data.
-- Use fixtures together with POM to provide reusable page objects and common test setup.
+- Test the app from the user’s perspective in a real browser.
+- Validate visible UI behavior and business outcomes, not implementation details.
+- Cover happy paths, validation rules, and error states.
+- Keep each test independent and repeatable, with no shared state between tests.
 
 ## 4. Test cases with categorization
 
@@ -74,14 +75,7 @@ These cover broader behavior, validation paths, and less frequent but important 
   - Toggle the theme and verify the UI updates correctly
 
 ## 5. Execution strategy
-- Daily: run only smoke tests
-- Weekly: run smoke + regression tests
-- Keep smoke tests under playwright/tests/smoke-tests and regression tests under playwright/tests/regression-tests
-- Separate the tests into different test files for better readability and maintenance
-- Use separate folders or tags:
-  - smoke-tests/
-  - regression-tests/
-
-## 6. Recommended tagging
-- Smoke tests: @smoke
-- Regression tests: @regression
+- Daily: run only smoke tests for quick confidence.
+- Weekly: run smoke + regression tests for broader coverage.
+- Smoke tests give fast, high-value confidence; regression tests cover validation
+  paths and less frequent workflows.

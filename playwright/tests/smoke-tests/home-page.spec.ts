@@ -2,6 +2,11 @@ import { test } from '@fixtures/pizza';
 import smokeData from '@data/smoke/smoke-data.json';
 
 test.describe('Core journeys', { tag: '@smoke' }, () => {
+    test.beforeEach(async ({ homePage }) => {
+        await homePage.open();
+        await homePage.resetState();
+    });
+
     test('TC-01: Homepage loads successfully', async ({ homePage }) => {
         await homePage.expectLoaded();
     });

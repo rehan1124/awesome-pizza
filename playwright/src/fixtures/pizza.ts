@@ -6,12 +6,10 @@ export type Fixtures = {
 };
 
 export const test = base.extend<Fixtures>({
+    // Provide the page object only. Navigation + state reset happen in each
+    // describe's beforeEach so the setup is explicit in the spec files.
     homePage: async ({ page }, use) => {
-        const homePage = new HomePage(page);
-        await homePage.open();
-        // Keep each test isolated and repeatable: reset stored state, then reload.
-        await homePage.resetState();
-        await use(homePage);
+        await use(new HomePage(page));
     },
 });
 
