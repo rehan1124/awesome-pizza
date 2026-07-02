@@ -9,9 +9,9 @@ export default defineConfig({
     reporter: process.env.CI ? 'blob' : [['html', { open: 'never' }]],
     use: {
         baseURL: 'http://127.0.0.1:3000',
-        trace: 'on-first-retry',
-        screenshot: 'only-on-failure',
-        video: 'retain-on-failure',
+        trace: process.env.CI ? 'retain-on-failure' : 'on',
+        screenshot: process.env.CI ? 'only-on-failure' : 'on',
+        video: process.env.CI ? 'off' : 'retain-on-failure',
     },
     projects: [
         {
