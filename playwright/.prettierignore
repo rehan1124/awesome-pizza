@@ -1,0 +1,9 @@
+node_modules/
+playwright-report/
+blob-report/
+all-blob-reports/
+test-results/
+package-lock.json
+
+# Docs are hand-formatted; leave their line wrapping alone.
+*.md

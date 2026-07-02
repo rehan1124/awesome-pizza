@@ -5,8 +5,8 @@ import type { GitHubActionOptions } from '@estruyf/github-actions-reporter';
 // Merges the per-shard blob reports into one HTML report and one combined
 // GitHub Actions run summary (flat "without details" table).
 export default {
-  reporter: [
-    ['html', { open: 'never' }],
-    ['@estruyf/github-actions-reporter', { useDetails: false } as GitHubActionOptions],
-  ],
+    reporter: [
+        ['html', { open: 'never' }],
+        ['@estruyf/github-actions-reporter', { useDetails: false } as GitHubActionOptions],
+    ],
 } satisfies Config;

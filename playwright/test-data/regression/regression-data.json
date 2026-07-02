@@ -1,13 +1,13 @@
 {
-    "customerName": "QA User",
-    "pizzaName": "Margherita",
-    "secondPizzaName": "Pepperoni",
-    "expectedMenuItems": [
-        "Margherita Pizza",
-        "Pepperoni Pizza",
-        "Quattro Stagioni",
-        "Vegetarian Delight",
-        "BBQ Chicken Pizza"
-    ],
-    "invalidOrderId": "does-not-exist-123"
+  "customerName": "QA User",
+  "pizzaName": "Margherita",
+  "secondPizzaName": "Pepperoni",
+  "expectedMenuItems": [
+    "Margherita Pizza",
+    "Pepperoni Pizza",
+    "Quattro Stagioni",
+    "Vegetarian Delight",
+    "BBQ Chicken Pizza"
+  ],
+  "invalidOrderId": "does-not-exist-123"
 }

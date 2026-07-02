@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import { Step } from '@utils/step';
 
 export class HomePage {
     readonly page: Page;
@@ -37,11 +38,13 @@ export class HomePage {
         this.htmlRoot = page.locator('html');
     }
 
+    @Step()
     async open() {
         await this.page.goto('/');
     }
 
     // Reset app state so each test starts clean (best-practices: clear storage + reload).
+    @Step()
     async resetState() {
         await this.page.evaluate(() => globalThis.localStorage.clear());
         await this.page.reload();
@@ -49,6 +52,7 @@ export class HomePage {
 
     // --- Actions ---
 
+    @Step()
     async addPizza(pizzaName: string) {
         await this.menuItem
             .filter({ hasText: pizzaName })
@@ -56,6 +60,7 @@ export class HomePage {
             .click();
     }
 
+    @Step()
     async decreasePizza(pizzaName: string) {
         await this.menuItem
             .filter({ hasText: pizzaName })
@@ -63,6 +68,7 @@ export class HomePage {
             .click();
     }
 
+    @Step()
     async removeFromCart(pizzaName: string) {
         await this.cartItem
             .filter({ hasText: pizzaName })
@@ -70,39 +76,47 @@ export class HomePage {
             .click();
     }
 
+    @Step()
     async fillCustomerName(name: string) {
         await this.customerNameInput.fill(name);
     }
 
+    @Step()
     async placeOrder() {
         await this.placeOrderButton.click();
     }
 
+    @Step()
     async placedOrderId(): Promise<string> {
         return this.orderIdInput.inputValue();
     }
 
+    @Step()
     async lookupOrder(orderId: string) {
         await this.orderIdInput.fill(orderId);
         await this.lookupOrderButton.click();
     }
 
+    @Step()
     async markAsDelivering() {
         await this.orderDetails.getByRole('button', { name: 'Mark as Delivering' }).click();
     }
 
+    @Step()
     async toggleTheme() {
         await this.themeToggle.click();
     }
 
     // --- Assertions (soft, per project convention: surface all UI issues in one run) ---
 
+    @Step()
     async expectLoaded() {
         await expect.soft(this.heading).toBeVisible();
         await expect.soft(this.menuHeading).toBeVisible();
         await expect.soft(this.menuItem.first()).toBeVisible();
     }
 
+    @Step()
     async expectMenuItems(expectedNames: string[]) {
         await expect.soft(this.menuItem).toHaveCount(expectedNames.length);
         for (const name of expectedNames) {
@@ -110,39 +124,48 @@ export class HomePage {
         }
     }
 
+    @Step()
     async expectCartCount(count: string) {
         await expect.soft(this.cartCount).toHaveText(count);
     }
 
+    @Step()
     async expectCartEmpty() {
         await expect.soft(this.emptyCartMessage).toBeVisible();
         await expect.soft(this.cartCount).toHaveText('0');
     }
 
+    @Step()
     async expectPlaceOrderDisabled() {
         await expect.soft(this.placeOrderButton).toBeDisabled();
     }
 
+    @Step()
     async expectOrderDetailsVisible() {
         await expect.soft(this.orderDetails).toBeVisible();
     }
 
+    @Step()
     async expectOrderStatus(status: string) {
         await expect.soft(this.orderStatus).toHaveText(status);
     }
 
+    @Step()
     async expectSuccessNotification() {
         await expect.soft(this.notification).toContainText(/Order placed successfully/i);
     }
 
+    @Step()
     async expectNotification(text: string | RegExp) {
         await expect.soft(this.notification).toContainText(text);
     }
 
+    @Step()
     async expectDarkTheme() {
         await expect.soft(this.htmlRoot).toHaveAttribute('data-theme', 'dark');
     }
 
+    @Step()
     async expectLightTheme() {
         await expect.soft(this.htmlRoot).not.toHaveAttribute('data-theme', 'dark');
     }

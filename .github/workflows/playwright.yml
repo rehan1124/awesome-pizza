@@ -5,7 +5,30 @@ on:
   # pull_request:
   #   branches: [ main, master ]
 jobs:
+  # Fast static gate: lint, format, and types. Runs before the browser matrix so
+  # style/type errors fail in seconds instead of after a full sharded test run.
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Install Playwright project dependencies
+      run: npm ci
+      working-directory: playwright
+    - name: Lint (ESLint)
+      run: npm run lint
+      working-directory: playwright
+    - name: Check formatting (Prettier)
+      run: npm run format:check
+      working-directory: playwright
+    - name: Typecheck (tsc)
+      run: npm run typecheck
+      working-directory: playwright
+
   test:
+    needs: quality
     timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:

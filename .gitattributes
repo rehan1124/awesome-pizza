@@ -1,0 +1,7 @@
+# Normalize line endings for the Playwright project (dev on Windows, CI on Linux)
+# so Prettier's endOfLine:lf and git agree and diffs stay clean.
+playwright/**/*.ts   text eol=lf
+playwright/**/*.mjs  text eol=lf
+playwright/**/*.json text eol=lf
+playwright/**/*.md   text eol=lf
+playwright/**/*.yml  text eol=lf
