@@ -1,0 +1,37 @@
+meta {
+  name: Get Daily Menu
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/daily-menu
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+assert {
+  res.status: eq 200
+  res.body.success: eq true
+}
+
+tests {
+  test("returns 200 OK", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("envelope is successful", function () {
+    expect(res.getBody().success).to.equal(true);
+    expect(res.getBody().message).to.be.a("string");
+  });
+
+  test("data is a non-empty array of menu entries", function () {
+    const data = res.getBody().data;
+    expect(data).to.be.an("array").that.is.not.empty;
+    expect(data[0]).to.have.all.keys("name", "description", "imageUrl");
+  });
+}

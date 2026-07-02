@@ -298,6 +298,11 @@ app.get('/api/admin', (req, res) => {
     }
 });
 
+// Serve the OpenAPI spec so the Swagger UI viewer (ui/swagger.html) can load it
+app.get('/openapi.yaml', (req, res) => {
+    res.type('text/yaml').sendFile(path.join(__dirname, '../openapi.yaml'));
+});
+
 // Serve the UI on root path
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../ui/index.html'));

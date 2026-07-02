@@ -1,0 +1,39 @@
+meta {
+  name: Update Order - Status Only
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{baseUrl}}/api/orders/order-002
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "DELIVERED"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.status: eq DELIVERED
+}
+
+tests {
+  test("returns 200 OK", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("only the status changes", function () {
+    const order = res.getBody().data;
+    expect(order.id).to.equal("order-002");
+    expect(order.status).to.equal("DELIVERED");
+    expect(order.contents).to.be.an("array").that.is.not.empty;
+  });
+}

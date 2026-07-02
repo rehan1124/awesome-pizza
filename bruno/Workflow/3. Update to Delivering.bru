@@ -1,0 +1,33 @@
+meta {
+  name: 3. Update to Delivering
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/orders/{{orderId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "DELIVERING"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.status: eq DELIVERING
+}
+
+tests {
+  test("order advances to DELIVERING", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.status).to.equal("DELIVERING");
+  });
+}

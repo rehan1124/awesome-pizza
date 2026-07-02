@@ -1,0 +1,37 @@
+meta {
+  name: Update Order - Not Found
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{baseUrl}}/api/orders/nonexistent-order
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "DELIVERED"
+  }
+}
+
+assert {
+  res.status: eq 404
+  res.body.success: eq false
+}
+
+tests {
+  test("returns 404 Not Found", function () {
+    expect(res.getStatus()).to.equal(404);
+  });
+
+  test("returns a standard error envelope", function () {
+    expect(res.getBody().success).to.equal(false);
+    expect(res.getBody().error).to.equal("Not found");
+  });
+}

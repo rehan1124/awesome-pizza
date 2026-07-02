@@ -1,0 +1,38 @@
+meta {
+  name: Update Order - Invalid Status
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{baseUrl}}/api/orders/order-001
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "INVALID_STATUS"
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.success: eq false
+}
+
+tests {
+  test("returns 400 Bad Request", function () {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("lists the allowed statuses", function () {
+    expect(res.getBody().error).to.equal("Bad request");
+    expect(res.getBody().message).to.include("RECEIVED");
+    expect(res.getBody().message).to.include("CANCELED");
+  });
+}

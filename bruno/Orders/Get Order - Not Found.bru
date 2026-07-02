@@ -1,0 +1,32 @@
+meta {
+  name: Get Order - Not Found
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/orders/nonexistent-order
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+assert {
+  res.status: eq 404
+  res.body.success: eq false
+}
+
+tests {
+  test("returns 404 Not Found", function () {
+    expect(res.getStatus()).to.equal(404);
+  });
+
+  test("returns a standard error envelope", function () {
+    expect(res.getBody().success).to.equal(false);
+    expect(res.getBody().error).to.equal("Not found");
+    expect(res.getBody().message).to.include("not found");
+  });
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Admin - Admin Role
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/admin
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.success: eq true
+}
+
+tests {
+  test("returns 200 OK for the admin role", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().message).to.include("admin");
+  });
+}

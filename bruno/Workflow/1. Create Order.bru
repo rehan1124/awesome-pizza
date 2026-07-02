@@ -1,0 +1,50 @@
+meta {
+  name: 1. Create Order
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/orders
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "sender": "Mike Davis",
+    "contents": [
+      { "name": "Quattro Stagioni", "quantity": 1 },
+      { "name": "Margherita Pizza", "quantity": 2 }
+    ]
+  }
+}
+
+script:post-response {
+  // Capture the generated id so the next requests in this folder can use it.
+  bru.setVar("orderId", res.getBody().data.id);
+}
+
+assert {
+  res.status: eq 201
+  res.body.data.status: eq RECEIVED
+}
+
+tests {
+  test("order is created", function () {
+    expect(res.getStatus()).to.equal(201);
+    expect(res.getBody().data.id).to.be.a("string").and.not.empty;
+  });
+}
+
+docs {
+  # Order lifecycle workflow
+
+  Run the requests in this folder top-to-bottom (or use "Run folder").
+  Step 1 creates an order and stores its id in the `orderId` runtime variable,
+  which steps 2-4 then reuse to fetch and advance the same order.
+}

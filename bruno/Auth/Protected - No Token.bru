@@ -1,0 +1,23 @@
+meta {
+  name: Protected - No Token
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/protected
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 401
+  res.body.success: eq false
+}
+
+tests {
+  test("returns 401 Unauthorized without a token", function () {
+    expect(res.getStatus()).to.equal(401);
+    expect(res.getBody().error).to.equal("Unauthorized");
+  });
+}

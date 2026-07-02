@@ -1,0 +1,27 @@
+meta {
+  name: Admin - Non-Admin Role
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/admin
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{userToken}}
+}
+
+assert {
+  res.status: eq 403
+  res.body.success: eq false
+}
+
+tests {
+  test("returns 403 Forbidden for a non-admin role", function () {
+    expect(res.getStatus()).to.equal(403);
+    expect(res.getBody().error).to.equal("Forbidden");
+  });
+}

@@ -1,0 +1,45 @@
+meta {
+  name: Update Order - Full
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/api/orders/order-001
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "sender": "John Doe Updated",
+    "status": "DELIVERING",
+    "contents": [
+      { "name": "Margherita Pizza", "quantity": 3 },
+      { "name": "Vegetarian Delight", "quantity": 1 }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.status: eq DELIVERING
+}
+
+tests {
+  test("returns 200 OK", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("all provided fields are updated", function () {
+    const order = res.getBody().data;
+    expect(order.id).to.equal("order-001");
+    expect(order.sender).to.equal("John Doe Updated");
+    expect(order.status).to.equal("DELIVERING");
+    expect(order.contents).to.have.lengthOf(2);
+  });
+}
