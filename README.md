@@ -10,6 +10,19 @@ A RESTful API for managing daily menu and pizza orders built with Express.js and
 - **TypeScript**: Type-safe development
 - **CORS Support**: Ready for frontend integration
 
+## Claude Code Skills
+
+This repo ships with [Claude Code](https://docs.claude.com/en/docs/claude-code)
+**Agent Skills** under [`.claude/skills/`](.claude/skills/README.md) that automate
+the Playwright QA workflows (authoring tests, the quality gate, and generating
+test plans from tickets).
+
+See [`.claude/skills/README.md`](.claude/skills/README.md) for the full list and
+the **top resources for discovering and reusing skills**:
+[skills.sh](https://www.skills.sh/) ·
+[alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) ·
+[claudeskills.info](https://claudeskills.info/).
+
 ## Getting Started
 
 ### Prerequisites
