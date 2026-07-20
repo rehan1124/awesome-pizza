@@ -63,7 +63,14 @@ pipeline {
 
     post {
         always {
-            // Browsable report in the build sidebar (needs the "HTML Publisher" plugin).
+            // Archive first: this is the fallback copy of the report, so it must not be
+            // skipped if the publishHTML step below fails (e.g. plugin not installed).
+            archiveArtifacts(
+                artifacts: 'playwright/playwright-report/**, playwright/test-results/**',
+                allowEmptyArchive: true
+            )
+            // Browsable report in the build sidebar. Needs the "HTML Publisher" plugin;
+            // without it the build fails with "No such DSL method 'publishHTML'".
             publishHTML(target: [
                 reportName           : 'Playwright HTML Report',
                 reportDir            : 'playwright/playwright-report',
@@ -72,11 +79,6 @@ pipeline {
                 alwaysLinkToLastBuild: true,
                 allowMissing         : true
             ])
-            // Keep the raw report + failure traces/screenshots as build artifacts.
-            archiveArtifacts(
-                artifacts: 'playwright/playwright-report/**, playwright/test-results/**',
-                allowEmptyArchive: true
-            )
         }
     }
 }
