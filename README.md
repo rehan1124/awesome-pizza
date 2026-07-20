@@ -367,3 +367,95 @@ curl -X PUT http://localhost:3000/api/orders/order-001 \
   -H "Content-Type: application/json" \
   -d '{"status": "DELIVERING"}'
 ```
+
+## End-to-End Tests (Playwright)
+
+The browser tests live in [`playwright/`](playwright/) and exercise the app the
+way a real user would. Two guides describe them:
+
+- [`playwright/TEST_STRATEGY.md`](playwright/TEST_STRATEGY.md) — **what** is
+  tested: the user journeys, and the smoke / regression split.
+- [`playwright/PLAYWRIGHT_BEST_PRACTICES.md`](playwright/PLAYWRIGHT_BEST_PRACTICES.md)
+  — **how** the tests are written: locators, assertions, page objects, and tags.
+
+You don't need to start the API yourself. Playwright starts it before the run and
+stops it afterwards (the `webServer` block in `playwright.config.ts`).
+
+### Run the tests locally
+
+```bash
+# Root dependencies — the test server is started from here
+npm ci
+
+cd playwright
+npm ci
+npx playwright install    # one time: download the browsers
+
+npm test                  # every test
+npm run test:smoke        # only tests tagged @smoke
+npm run test:regression   # only tests tagged @regression
+```
+
+Results are written as an HTML report to `playwright/playwright-report/`. Locally
+every test records a trace and screenshot, so you can replay a run step by step.
+
+Before pushing, run the same checks CI enforces:
+
+```bash
+npm run check   # lint + format:check + typecheck
+```
+
+### Continuous integration
+
+The suite runs in **GitHub Actions** on every push, and in **Jenkins** on demand.
+Both run the same tests. They differ in how widely they run them, and in how the
+results are presented.
+
+| | GitHub Actions | Jenkins |
+| --- | --- | --- |
+| Config | [`.github/workflows/playwright.yml`](.github/workflows/playwright.yml) | [`Jenkinsfile`](Jenkinsfile) |
+| Runs on | Push to `main` / `master` | Manually, from the Jenkins job |
+| Browsers | Chromium + WebKit | Chromium |
+| Speed | Split across 4 parallel shards | A single run |
+| Results | HTML report, downloadable for 30 days | **Test Result** page and trend graph |
+
+#### GitHub Actions
+
+Three jobs run in order:
+
+1. **quality** — lint, formatting, and types. This fails within seconds of a style
+   or type error, so a broken push never reaches the slower browser jobs.
+2. **test** — the suite, split across 4 shards that run in parallel. Each shard
+   uploads its own partial (`blob`) report.
+3. **merge-reports** — combines those partial reports into one HTML report and a
+   run summary. Download it from the **Artifacts** section of the run.
+
+#### Jenkins
+
+The [`Jenkinsfile`](Jenkinsfile) runs everything inside the official Playwright
+Docker image. That image already contains Node, the browsers, and the system
+libraries they depend on, so nothing needs installing on the Jenkins machine.
+
+Three stages run in order:
+
+1. **Install dependencies** — `npm ci` at the repo root (for the test server) and
+   again in `playwright/`.
+2. **Quality (lint, format, types)** — the same static gate as GitHub Actions.
+3. **Run tests** — Chromium only, reporting to JUnit XML.
+
+Results appear on the build's **Test Result** page, along with a pass/fail trend
+across builds. Traces and screenshots from failed tests are kept as build
+artifacts, so you can download and replay a failure.
+
+Note that a failing test marks the build **UNSTABLE** (yellow) rather than failed
+(red). This is the usual Jenkins convention: red means the build itself broke,
+yellow means it built but some tests failed.
+
+**Requirements:** the *Docker Pipeline* and *JUnit* plugins, and an agent that can
+run Docker containers.
+
+> **Keep the image tag in sync.** The tag in the `Jenkinsfile`
+> (`mcr.microsoft.com/playwright:v1.61.1-noble`) must match the `@playwright/test`
+> version in `playwright/package-lock.json`. When you upgrade Playwright, change
+> both in the same commit — otherwise the browsers fail to launch, and the error
+> won't obviously point at the tag.
