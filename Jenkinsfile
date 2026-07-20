@@ -51,6 +51,17 @@ pipeline {
             }
         }
 
+        // Fast static gate, mirroring the GitHub Actions `quality` job. Fails in
+        // seconds on a lint/format/type error, before spending time on a browser run.
+        stage('Quality (lint, format, types)') {
+            steps {
+                dir('playwright') {
+                    // `check` runs lint + format:check + typecheck (playwright/package.json).
+                    sh 'npm run check'
+                }
+            }
+        }
+
         stage('Run tests') {
             steps {
                 dir('playwright') {
