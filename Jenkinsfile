@@ -22,6 +22,9 @@ pipeline {
         // workspace, otherwise `npm ci` fails trying to write its cache.
         HOME = "${WORKSPACE}"
         npm_config_cache = "${WORKSPACE}/.npm"
+        // The junit reporter prints to stdout unless this is set; it names the file
+        // written relative to the test command's working directory (playwright/).
+        PLAYWRIGHT_JUNIT_OUTPUT_NAME = 'results.xml'
     }
 
     // Job-wide guardrails (optional — the pipeline runs fine without them):
@@ -53,9 +56,10 @@ pipeline {
                 dir('playwright') {
                     // --project=chromium: the config also defines a `webkit` project.
                     // The image ships both browsers, so drop this flag to run the full set.
-                    // --reporter=html: under CI the config defaults to `blob`, which is
-                    // only useful for the sharded merge step in GitHub Actions.
-                    sh 'npx playwright test --project=chromium --reporter=html'
+                    // --reporter=junit: Jenkins reads the XML natively (see the junit step
+                    // below). The config's CI default is `blob`, which only suits the
+                    // sharded merge step in GitHub Actions.
+                    sh 'npx playwright test --project=chromium --reporter=junit'
                 }
             }
         }
@@ -63,22 +67,15 @@ pipeline {
 
     post {
         always {
-            // Archive first: this is the fallback copy of the report, so it must not be
-            // skipped if the publishHTML step below fails (e.g. plugin not installed).
+            // Failure traces and screenshots. Playwright only writes these for failed
+            // tests, so the folder is absent on a green run - hence allowEmptyArchive.
             archiveArtifacts(
-                artifacts: 'playwright/playwright-report/**, playwright/test-results/**',
+                artifacts: 'playwright/test-results/**',
                 allowEmptyArchive: true
             )
-            // Browsable report in the build sidebar. Needs the "HTML Publisher" plugin;
-            // without it the build fails with "No such DSL method 'publishHTML'".
-            publishHTML(target: [
-                reportName           : 'Playwright HTML Report',
-                reportDir            : 'playwright/playwright-report',
-                reportFiles          : 'index.html',
-                keepAll              : true,
-                alwaysLinkToLastBuild: true,
-                allowMissing         : true
-            ])
+            // Feeds the build's "Test Result" page and the pass/fail trend graph.
+            // A failed test marks the build UNSTABLE (yellow), not FAILED (red).
+            junit 'playwright/results.xml'
         }
     }
 }
