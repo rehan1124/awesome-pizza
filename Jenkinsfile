@@ -1,11 +1,27 @@
-// Runs the Awesome Pizza Playwright suite and publishes the HTML report in Jenkins.
+// Runs the Awesome Pizza Playwright suite inside the official Playwright Docker image
+// and publishes the HTML report in Jenkins. See https://playwright.dev/docs/ci#jenkins
 pipeline {
-    agent any
+    agent {
+        docker {
+            // Keep this tag in sync with @playwright/test in playwright/package-lock.json
+            // (currently 1.61.1). The image ships Node plus the matching browsers and
+            // their OS libraries, so there is no `playwright install` step to run.
+            image 'mcr.microsoft.com/playwright:v1.61.1-noble'
+            // --ipc=host: recommended by Playwright to stop Chromium running out of
+            // shared memory and crashing inside Docker.
+            args '--ipc=host'
+        }
+    }
 
     environment {
         // playwright.config.ts keys off process.env.CI for retries(2), workers(1),
         // forbidOnly, and retain-on-failure traces. Jenkins does not set it, so we do.
         CI = 'true'
+        // Jenkins runs the container as the Jenkins UID, not root, so the image's
+        // default HOME (/root) is unwritable. Point HOME and the npm cache at the
+        // workspace, otherwise `npm ci` fails trying to write its cache.
+        HOME = "${WORKSPACE}"
+        npm_config_cache = "${WORKSPACE}/.npm"
     }
 
     // Job-wide guardrails (optional — the pipeline runs fine without them):
@@ -32,23 +48,11 @@ pipeline {
             }
         }
 
-        stage('Install browsers') {
-            steps {
-                dir('playwright') {
-                    // Chromium only, to keep the install fast. --with-deps also installs
-                    // the OS libraries the browser needs. It requires root; if the agent
-                    // runs as a non-root user, drop the flag and run
-                    // `sudo npx playwright install-deps chromium` once on the agent.
-                    sh 'npx playwright install --with-deps chromium'
-                }
-            }
-        }
-
         stage('Run tests') {
             steps {
                 dir('playwright') {
-                    // --project=chromium: the config also defines a `webkit` project, but
-                    // we only install Chromium above, so limit the run to match.
+                    // --project=chromium: the config also defines a `webkit` project.
+                    // The image ships both browsers, so drop this flag to run the full set.
                     // --reporter=html: under CI the config defaults to `blob`, which is
                     // only useful for the sharded merge step in GitHub Actions.
                     sh 'npx playwright test --project=chromium --reporter=html'
